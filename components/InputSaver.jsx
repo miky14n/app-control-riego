@@ -3,7 +3,7 @@ import { View, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-nati
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialIcons } from '@expo/vector-icons'; 
 
-const InputSaver = ({ nameKey, placeholder }) => {
+const InputSaver = ({ nameKey, placeholder,keyBtype="default" }) => {
   const [param, setParam] = useState('');
   const [existingValue, setExistingValue] = useState(null);
 
@@ -46,9 +46,10 @@ const InputSaver = ({ nameKey, placeholder }) => {
         style={styles.input}
         placeholder={placeholder}
         value={param}
-        onChangeText={validateInput}
-        keyboardType="numeric"
+        onChangeText={keyBtype === "default" ? setParam : validateInput}
+        keyboardType={keyBtype}
       />
+
       <TouchableOpacity onPress={saveOrUpdate} style={styles.iconButton}>
         <MaterialIcons
           name={existingValue ? 'update' : 'save'}

@@ -35,11 +35,10 @@
     "plugins": [
       "expo-router"
     ],
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
-      "url": "https://u.expo.dev/11a0ab9a-f730-46e4-9404-cf94d36fff12"
+      "url": "https://u.expo.dev/11a0ab9a-f730-46e4-9404-cf94d36fff12",
+      "fallbackToCacheTimeout": 0
     }
   }
 }

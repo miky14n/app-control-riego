@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView, Text, StyleSheet, Dimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 
-const PredictionChart = ({ predictions,minValue,maxValue }) => {
+const LinearGraphic = ({ predictions,minValue,maxValue ,date=""}) => {
   const screenWidth = Dimensions.get('window').width;
   const hasData = Array.isArray(predictions) && predictions.length > 0;
 
@@ -71,7 +71,7 @@ const PredictionChart = ({ predictions,minValue,maxValue }) => {
   );
 };
 
-export default PredictionChart;
+export default LinearGraphic;
 
 const styles = StyleSheet.create({
   container: {

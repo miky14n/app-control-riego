@@ -5,25 +5,16 @@ import InputSaver from '../components/InputSaver';
 
 export default function SaveScrren(){
   const [param, setParam] = useState('');
-
-  const saveParam = async () => {
-    try {
-      await AsyncStorage.setItem('myParam', param);
-      alert('Guardado correctamente');
-    } catch (error) {
-      console.log('Error al guardar:', error);
-    }
-  };
-
   return (
     <View>
        <Text style={styles.title}>Ingrese la temperatura maxima</Text>
-       <InputSaver nameKey="tempMax" placeholder="Temp. máxima" />
+       <InputSaver nameKey="tempMax" placeholder="Temp. máxima" keyBtype="numeric"/>
        <Text style={styles.title}>Ingrese el % de humedad minima</Text>
        <InputSaver nameKey="humiMin" placeholder="Humedad minima" />
        <Text style={styles.title}>Ingrese el % de humedad maxima</Text>
-       <InputSaver nameKey="humiMax" placeholder="Humedad maxima" />
-
+       <InputSaver nameKey="humiMax" placeholder="Humedad maxima" keyBtype="numeric"/>
+      <Text style={styles.title}>Url servidor</Text>
+       <InputSaver nameKey="URL-Model" placeholder="URL" />
     </View>
   );
 };

@@ -9,35 +9,24 @@ import {
 import { useIrrigationData } from "../hooks/useIrrigationData";
 import LatestReadingCard from "../components/LatestReadingCard";
 import RefreshButton from "../components/RefreshButton";
-import {
-  getHourlyAveragesFromYesterday,
-  getPredictions,
-} from "../lib/requestdata";
-import PredictionChart from "../components/LinearGraphic";
+import LinearGraphic from "../components/LinearGraphic";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Notifications from "expo-notifications";
+import { scheduleHumidityAlert, scheduleHumidityAlertsList } from "../lib/notificationsSettings";
 
 const Index = () => {
   const { data, loading, fetchData } = useIrrigationData();
   const [predictions, setPredictions] = useState([]);
   const [paramMinH, setParamMinH] = useState(0);
   const [paramMax, setParamMax] = useState(100);
+  const [predictionDate, setPredictionDate] = useState();
+  
 
-  // ⚠️ Notificación si humedad actual < mínima
   const checkHumidityAlert = async (currentHumidity, min) => {
     if (currentHumidity < min) {
+      await scheduleHumidityAlert();
       Alert.alert("⚠️ Alerta", "La humedad no está en condiciones óptimas.");
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: "🌿 Alerta de humedad",
-          body: "La humedad ha bajado del nivel mínimo.",
-        },
-        trigger: { seconds: 3 },
-        android: {
-          channelId: "default",
-        },
-      });
     }
+
   };
 
   useEffect(() => {
@@ -52,14 +41,35 @@ const Index = () => {
         const currentHumidity = data[0].humity;
         await checkHumidityAlert(currentHumidity, min);
       }
-
-      const averages = await getHourlyAveragesFromYesterday();
-      const predicciones = await getPredictions(averages);
-      setPredictions(Array.isArray(predicciones) ? predicciones : []);
+      console.log("hola");
     };
 
     fetchPredictions();
   }, [data]);
+  useEffect(() => {
+    const loadValue = async () => {
+      try {
+        const stored = await AsyncStorage.getItem("predict-list");
+        if (stored) {
+          const predictionsList = JSON.parse(stored);
+          setPredictions(predictionsList.predicciones);
+          setPredictionDate(predictionsList.date);
+        }
+      } catch (error) {
+        console.log('Error al cargar valor datos predichos:', error);
+      }
+    };
+
+    loadValue();
+  }, []);
+  useEffect(() => {
+    if (predictions.length > 0) {
+      scheduleHumidityAlertsList(predictions, paramMinH);
+      console.log("entte");
+    }
+  }, [predictions,paramMinH]);
+
+  
 
   return (
     <ScrollView style={styles.container}>
@@ -68,14 +78,15 @@ const Index = () => {
       ) : (
         <>
           <LatestReadingCard reading={data[0]} />
-          <Text style={styles.chartTitle}>Gráfico de Humedad Predicha</Text>
+          <Text style={styles.chartTitle}>Gráfico de Humedad Predicha para: {predictionDate}</Text>
 
-          <PredictionChart
+          <LinearGraphic
             predictions={predictions}
             minValue={paramMinH}
             maxValue={paramMax}
+            date={predictionDate}
           />
-
+          
           <RefreshButton onPress={fetchData} />
         </>
       )}

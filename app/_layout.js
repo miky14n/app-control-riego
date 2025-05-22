@@ -1,28 +1,16 @@
 import { useEffect } from 'react';
 import { StyleSheet } from "react-native";
-import * as Notifications from 'expo-notifications';
+
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Drawer } from "expo-router/drawer";
+import {configure} from '../lib/notificationsSettings';
+import saveOrUpdatePredictions from '../lib/predictions';
 
 export default function Layout () {
 
   useEffect(() => {
-    const registerNotifications = async () => {
-      const { status } = await Notifications.requestPermissionsAsync();
-      if (status !== 'granted') {
-        alert('Permiso de notificaciones no concedido');
-      }
-      if (Platform.OS === "android") {
-        Notifications.setNotificationChannelAsync("default", {
-          name: "default",
-          importance: Notifications.AndroidImportance.MAX,
-          vibrationPattern: [0, 250, 250, 250],
-          lightColor: "#FF231F7C",
-        });
-      }
-    };
-
-    registerNotifications();
+    configure();
+    saveOrUpdatePredictions();
   }, []);
 
   return (
